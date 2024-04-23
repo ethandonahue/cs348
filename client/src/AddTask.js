@@ -30,7 +30,7 @@ function AddTask() {
     useEffect(() => {
         const fetchStudents = async () => {
             try {
-                const response = await fetch('http://localhost:9000/getStudents');
+                const response = await fetch('https://cs348.vercel.app/getStudents');
                 if (!response.ok) {
                     throw new Error('Failed to fetch students');
                 }
@@ -82,7 +82,7 @@ function AddTask() {
         };
 
         try {
-            const response = await fetch('http://localhost:9000/addTask', {
+            const response = await fetch('https://cs348.vercel.app/addTask', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

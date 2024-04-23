@@ -17,7 +17,7 @@ function ViewTasks() {
     useEffect(() => {
         const fetchTasks = async () => {
             try {
-                const response = await fetch('http://localhost:9000/getTasks');
+                const response = await fetch('https://cs348.vercel.app/getTasks');
                 if (!response.ok) {
                     throw new Error('Failed to fetch tasks');
                 }
@@ -34,7 +34,7 @@ function ViewTasks() {
 
         const fetchStudents = async () => {
             try {
-                const response = await fetch('http://localhost:9000/getStudents');
+                const response = await fetch('https://cs348.vercel.app/getStudents');
                 if (!response.ok) {
                     throw new Error('Failed to fetch students');
                 }
@@ -52,7 +52,7 @@ function ViewTasks() {
     // Function to delete a task
     const handleDeleteTask = async (taskId) => {
         try {
-            const response = await fetch(`http://localhost:9000/removeTask/${taskId}`, {
+            const response = await fetch(`https://cs348.vercel.app/removeTask/${taskId}`, {
                 method: 'DELETE',
             });
 

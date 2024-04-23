@@ -20,7 +20,7 @@ function AddStudent() {
             };
 
             try {
-                const response = await fetch('http://localhost:9000/addStudent', { // Update the port to match your backend
+                const response = await fetch('https://cs348.vercel.app/addStudent', { // Update the port to match your backend
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -44,7 +44,7 @@ function AddStudent() {
     useEffect(() => {
         const fetchStudents = async () => {
             try {
-                const response = await fetch('http://localhost:9000/getStudents'); // Update the port to match your backend
+                const response = await fetch('https://cs348.vercel.app/getStudents'); // Update the port to match your backend
                 if (!response.ok) {
                     throw new Error('Failed to fetch students');
                 }

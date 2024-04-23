@@ -33,7 +33,7 @@ function EditTask() {
     useEffect(() => {
         const fetchTask = async () => {
             try {
-                const response = await fetch(`http://localhost:9000/getTask/${taskId}`);
+                const response = await fetch(`https://cs348.vercel.app/getTask/${taskId}`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch task');
                 }
@@ -51,7 +51,7 @@ function EditTask() {
 
         const fetchStudents = async () => {
             try {
-                const response = await fetch('http://localhost:9000/getStudents');
+                const response = await fetch('https://cs348.vercel.app/getStudents');
                 if (!response.ok) {
                     throw new Error('Failed to fetch students');
                 }
@@ -107,7 +107,7 @@ function EditTask() {
                 studentIds: selectedStudentIds,
             };
 
-            const response = await fetch(`http://localhost:9000/editTask/${taskId}`, {
+            const response = await fetch(`https://cs348.vercel.app/editTask/${taskId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

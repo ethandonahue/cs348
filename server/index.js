@@ -11,7 +11,7 @@ const app = express();
 const cors = require("cors");
 
 app.use(cors({
-    origin: "http://localhost:3000"
+    origin: "https://cs348.vercel.app"
 }));
 app.use(express.json());
 
