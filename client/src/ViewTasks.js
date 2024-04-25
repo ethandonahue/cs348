@@ -178,7 +178,7 @@ function ViewTasks() {
 
             taskDueDate.setHours(0, 0, 0, 0);
             start.setHours(0, 0, 0, 0);
-            end.setHours(0, 0, 0, 0);
+            end.setHours(23, 59, 59, 999);
 
 
             if (taskDueDate < start || taskDueDate > end) {
