@@ -172,7 +172,7 @@ function ViewTasks() {
             return false;
         }
         if (startDate && endDate) {
-            const taskDueDate = new Date(task.due_date);
+            const taskDueDate = adjustDueDate(task.due_date); // Adjust the due date here
             const start = new Date(startDate);
             const end = new Date(endDate);
             if (taskDueDate < start || taskDueDate > end) {
