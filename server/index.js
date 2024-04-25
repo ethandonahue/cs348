@@ -1,12 +1,10 @@
 require("dotenv").config({ path: __dirname + "/.env" });
 const express = require('express');
 const pool = require(__dirname + "/config/db.config.js");
-const Student = require('./models/Student'); // Import the Sequelize model for students
-const Task = require('./models/Task'); // Import the Sequelize model for students
-const TaskStudent = require('./models/TaskStudent'); // Import the Sequelize model for students
+const Student = require('./models/Student');
+const Task = require('./models/Task');
+const TaskStudent = require('./models/TaskStudent');
 
-
-// const Sequelize = require('sequelize');
 const app = express();
 const cors = require("cors");
 
@@ -30,10 +28,6 @@ pool.query(`
     }
 });
 
-
-
-
-//Routes
 app.get("/", (req, res) => {
     res.send("Hello World!");
 });
@@ -41,14 +35,17 @@ app.get("/", (req, res) => {
 const addStudent = async (req, res) => {
     const { name } = req.body;
     try {
+        await pool.query('BEGIN');
         const query = {
             name: 'add-student',
             text: 'INSERT INTO students (name) VALUES ($1) RETURNING *',
             values: [name]
         };
         const newStudent = await pool.query(query);
+        await pool.query('COMMIT');
         res.status(201).json(newStudent.rows[0]);
     } catch (error) {
+        await pool.query('ROLLBACK');
         console.error('Error adding student:', error);
         res.status(500).json({ error: 'Failed to add student' });
     }
@@ -56,21 +53,22 @@ const addStudent = async (req, res) => {
 
 const getStudents = async (req, res) => {
     try {
+        await pool.query('BEGIN');
         const students = await Student.findAll();
+        await pool.query('COMMIT');
         res.status(200).json(students);
     } catch (error) {
+        await pool.query('ROLLBACK');
         console.error('Error fetching students:', error);
         res.status(500).json({ error: 'Failed to fetch students' });
     }
 };
 
-
 const addTask = async (req, res) => {
     const { title, description, dueDate, priority, studentIds } = req.body;
     try {
-
+        await pool.query('BEGIN');
         const formattedDueDate = dueDate ? new Date(dueDate).toISOString() : new Date().toISOString();
-        // Create the task
         const newTask = await Task.create({
             title,
             description,
@@ -78,20 +76,18 @@ const addTask = async (req, res) => {
             priority
         });
 
-        // Extract the ID of the newly created task
         const taskId = newTask.id;
-
-        // Create task students entries
         const taskStudents = studentIds.map(studentId => ({
             task_id: taskId,
             student_id: studentId
         }));
 
-        // Bulk create task students entries
         await TaskStudent.bulkCreate(taskStudents);
 
+        await pool.query('COMMIT');
         res.status(201).json({ taskId });
     } catch (error) {
+        await pool.query('ROLLBACK');
         console.error('Error adding task:', error);
         res.status(500).json({ error: 'Failed to add task' });
     }
@@ -99,6 +95,7 @@ const addTask = async (req, res) => {
 
 const getTasks = async (req, res) => {
     try {
+        await pool.query('BEGIN');
         const tasks = await pool.query(`
             SELECT tasks.id, tasks.title, tasks.description, tasks.due_date, tasks.priority, 
             array_agg(json_build_object('id', students.id, 'name', students.name)) AS assigned_students
@@ -107,17 +104,19 @@ const getTasks = async (req, res) => {
             LEFT JOIN students ON task_students.student_id = students.id
             GROUP BY tasks.id
         `);
+        await pool.query('COMMIT');
         res.status(200).json(tasks.rows);
     } catch (error) {
+        await pool.query('ROLLBACK');
         console.error('Error fetching tasks:', error);
         res.status(500).json({ error: 'Failed to fetch tasks' });
     }
 };
 
-
 const removeTask = async (req, res) => {
     const taskId = req.params.taskId;
     try {
+        await pool.query('BEGIN');
         await Task.destroy({
             where: {
                 id: taskId
@@ -129,8 +128,10 @@ const removeTask = async (req, res) => {
                 task_id: taskId
             }
         });
+        await pool.query('COMMIT');
         res.status(200).json({ message: 'Task removed successfully' });
     } catch (error) {
+        await pool.query('ROLLBACK');
         console.error('Error removing task:', error);
         res.status(500).json({ error: 'Failed to remove task' });
     }
@@ -140,6 +141,7 @@ const editTask = async (req, res) => {
     const taskId = req.params.taskId;
     const { title, description, dueDate, priority, studentIds } = req.body;
     try {
+        await pool.query('BEGIN');
         const updateTaskQuery = {
             name: 'update-task',
             text: 'UPDATE tasks SET title = $1, description = $2, due_date = $3, priority = $4 WHERE id = $5',
@@ -165,8 +167,10 @@ const editTask = async (req, res) => {
             await pool.query(taskStudentQuery);
         }
 
+        await pool.query('COMMIT');
         res.status(200).json({ message: 'Task updated successfully' });
     } catch (error) {
+        await pool.query('ROLLBACK');
         console.error('Error updating task:', error);
         res.status(500).json({ error: 'Failed to update task' });
     }
@@ -175,6 +179,7 @@ const editTask = async (req, res) => {
 const getTaskById = async (req, res) => {
     const taskId = req.params.taskId;
     try {
+        await pool.query('BEGIN');
         const taskQuery = {
             name: 'get-task-by-id',
             text: 'SELECT * FROM tasks WHERE id = $1',
@@ -194,13 +199,14 @@ const getTaskById = async (req, res) => {
             assigned_students: taskStudents.rows
         };
 
+        await pool.query('COMMIT');
         res.status(200).json(taskWithStudents);
     } catch (error) {
+        await pool.query('ROLLBACK');
         console.error('Error fetching task by ID:', error);
         res.status(500).json({ error: 'Failed to fetch task by ID' });
     }
 };
-
 
 app.post("/addStudent", addStudent);
 app.get("/getStudents", getStudents);
@@ -213,5 +219,3 @@ app.get("/getTask/:taskId", getTaskById);
 app.listen(PORT, () => {
     console.log(`Server listening on the port ${PORT}`);
 });
-
-
