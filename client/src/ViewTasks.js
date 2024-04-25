@@ -175,6 +175,10 @@ function ViewTasks() {
             const taskDueDate = adjustDueDate(task.due_date); // Adjust the due date here
             const start = new Date(startDate);
             const end = new Date(endDate);
+
+            start.setHours(0, 0, 0, 0);
+            end.setHours(23, 59, 59, 999);
+
             if (taskDueDate < start || taskDueDate > end) {
                 return false;
             }
