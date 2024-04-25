@@ -176,10 +176,12 @@ function ViewTasks() {
             const start = new Date(startDate);
             const end = new Date(endDate);
 
+            taskDueDate.setHours(0, 0, 0, 0);
             start.setHours(0, 0, 0, 0);
-            end.setHours(23, 59, 59, 999);
+            end.setHours(0, 0, 0, 0);
 
-            if (taskDueDate < start || taskDueDate > end) {
+
+            if (taskDueDate <= start || taskDueDate >= end) {
                 return false;
             }
         }
