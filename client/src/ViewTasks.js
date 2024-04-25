@@ -181,7 +181,7 @@ function ViewTasks() {
             end.setHours(0, 0, 0, 0);
 
 
-            if (taskDueDate <= start || taskDueDate >= end) {
+            if (taskDueDate < start || taskDueDate > end) {
                 return false;
             }
         }
